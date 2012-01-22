@@ -1,0 +1,43 @@
+% layout 'base';
+<div class="contextual">
+    <%= link_to l('label_personalize_page') => url_for( '/my/page_layout' ) %>
+</div>
+
+<h2><%=l 'label_my_page' %></h2>
+
+<div id="list-top">
+  <% if( $blocks->{top} ){ %>
+  <% foreach my $b ( @{ $blocks->{left} } ){ %>
+  <% next unless a_is_include( $b , keys( %{ $Controller::My::BLOCKS } ) ); %>
+  <div class="mypage-box">
+    <%= include "my/blocks/$b" , locals => { user => $user } %>
+  </div>
+  <% } %>
+  <% } %>
+</div>
+
+<div id="list-left" class="splitcontentleft">
+  <% if( $blocks->{left} ){ %>
+  <% foreach my $b ( @{ $blocks->{left} } ){ %>
+  <% next unless a_is_include( $b , keys( %{ $Controller::My::BLOCKS } ) ); %>
+  <div class="mypage-box">
+    <%= include "my/blocks/$b" , locals => { user => $user } %>
+  </div>
+  <% } %>
+  <% } %>
+</div>
+
+<div id="list-right" class="splitcontentright">
+  <% if( $blocks->{right} ){ %>
+  <% foreach my $b ( @{ $blocks->{right} } ){ %>
+  <% next unless a_is_include( $b , keys( %{ $Controller::My::BLOCKS } ) ); %>
+  <div class="mypage-box">
+    <%= include "my/blocks/$b" , locals => { user => $user } %>
+  </div>
+  <% } %>
+  <% } %>
+</div>
+
+<%# context_menu( url_for( 'issues/context_menu' ) ) %>
+
+<% html_title( l('label_my_page') ); %>

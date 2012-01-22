@@ -1,0 +1,6 @@
+<p><%== link_to_project( $news->project ) . ': ' unless stash('project') %>
+<%= link_to h( $news->title ) => $news->path %>
+<%= l('label_x_comments', count => $news->comments_count ) if $news->comments_count > 0 %>
+<br />
+<% if( $news->summary ){ %><span class="summary"><%= h $news->summary %></span><br /><% } %>
+<span class="author"><%== authoring $news->created_on, $news->author %></span></p>

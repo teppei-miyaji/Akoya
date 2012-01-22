@@ -1,0 +1,35 @@
+package Akoya::User;
+use Mojo::Base 'Mojolicious::Plugin';
+use lib qw|/Users/tripper/akoya/lib|;
+use Akoya::User::Attribute;
+
+use Data::Dumper;
+
+has [qw/parent/];
+
+sub register {
+  my ( $self , $app ) = @_;
+  my $user = __PACKAGE__->new;
+  $app->helper(
+    user => sub{
+      my ( $c ) = @_;
+      $user->parent( $c );
+      $user;
+    }
+  );
+}
+
+sub current {
+  my ( $self ) = @_;
+  my $id = $self->parent->session('id') || 0;
+  my $user;
+  if( $id ){
+    $user = Akoya::User::Attribute->new( id => $id , parent => $self->parent );
+  }
+  else{
+    $user = Akoya::User::AnonymousUser->new( parent => $self->parent );
+  }
+  $user;
+}
+
+1;

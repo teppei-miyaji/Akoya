@@ -1,0 +1,53 @@
+% layout 'base';
+<div class="contextual">
+<%= link_to( l('button_change_password') => url_for( 'my/password' ) => ( class => 'icon icon-passwd' ) ) if $user->is_change_password_allowed %>
+<% emit_hook( 'view_my_account_contextual' , user => $user); %>
+</div>
+
+<h2><%= l('label_my_account') %></h2>
+<%= error_messages_for 'user' %>
+
+<%= form_for url_for( "my/account" ) => ( id => 'my_account_form' ) => ( method => 'post' ) => begin %>
+<% my $f = form_builder_base( user => $user ); %><div style="margin:0;padding:0;display:inline">
+<div class="splitcontentleft">
+<fieldset class="box tabular">
+  <legend><%= l 'label_information_plural' %></legend>
+  <p><%== $f->text_field( 'firstname' , { required => 1 } ) %></p>
+  <p><%== $f->text_field( 'lastname' , { required => 1 } ) %></p>
+  <p><%== $f->text_field( 'mail' , { required => 1 } ) %></p>
+  <p><%== $f->select( 'language' , lang_options_for_select ) %></p>
+  <% if( setting->is_openid ){ %>
+  <p><%= $f->text_field( 'identity_url' ) %></p>
+  <% } %>
+
+  <% if( $user->custom_field_values ){ %>
+  <% foreach my $value( $user->custom_field_values ){ %>
+  <% next unless $value->type eq 'editable'; %>
+    <p><%= custom_field_tag_with_label( 'user' , $value ) %></p>
+  <% } %>
+  <% } %>
+  <% emit_hook( 'view_my_account' , user => $user, form => $f ); %>
+</fieldset>
+
+<%= submit_button l('button_save') %>
+</div>
+
+<div class="splitcontentright">
+<fieldset class="box">
+  <legend><%= l 'field_mail_notification' %></legend>
+  <%= include( 'users/_mail_notifications' ) %>
+</fieldset>
+
+<fieldset class="box tabular">
+  <legend><%= l 'label_preferences' %></legend>
+  <%= include( 'users/_preferences' ) %>
+</fieldset>
+
+</div>
+<% end %>
+
+<% content_for 'sidebar' => begin %>
+<%= include 'my/_sidebar' %>
+<% end %>
+
+<% html_title( l('label_my_account') ); %>

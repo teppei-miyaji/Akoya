@@ -1,0 +1,9 @@
+package Akoya::User::Perf;
+use Mojo::Base -base;
+
+has [qw/warn_on_leaving_unsaved/];
+sub setup{
+  my ( $self , $options ) = @_;
+}
+
+1;

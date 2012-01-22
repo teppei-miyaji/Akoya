@@ -1,0 +1,12 @@
+<p>
+<%# tag label => ( class => "hidden-for-sighted" ) => ( for => "user_mail_notification" ) => begin %><%= l "description_user_mail_notification" %><% end %>
+<%= select_field 'user[mail_notification]' => options_for_select( $user->mail_notification , user_mail_notification_options( $user ) ) =>
+                                      ( onchange => 'if (this.value == "selected") {Element.show("notified-projects")} else {Element.hide("notified-projects")}' ) %>
+</p>
+<% tag div => ( id => 'notified-projects' ) => ( style => ( $user->mail_notification eq 'selected' ? '' : 'display:none;') ) => begin %>
+<p><% foreach my $project( $user->projects ){ %>
+    <label><%= check_box 'notified_project_ids[]', $project->id, a_is_include( $project->id , $user->notified_projects_ids ) %> <%= h $project->name %></label><br />
+<% } %></p>
+<p><em><%= l 'text_user_mail_option' %></em></p>
+<% end %>
+<p><label><%= l 'label_user_mail_no_self_notified' %><%= check_box 'no_self_notified', 1, $user->pref->no_self_notified %></label></p>

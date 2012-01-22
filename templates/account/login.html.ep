@@ -1,0 +1,45 @@
+% layout 'base';
+<% emit_hook 'view_account_login_top'; %>
+<div id="login-form">
+<%= form_for url_for( 'login' ) => (method => 'post') => begin %><div style="margin:0;padding:0;display:inline">
+<%= back_url_hidden_field_tag %>
+<table>
+<tr>
+    <td align="right"><label for="username"><%= l 'field_login' %>:</label></td>
+    <td align="left"><%= text_field username => '' , tabindex => '1' %></td>
+</tr>
+<tr>
+    <td align="right"><label for="password"><%= l 'field_password' %>:</label></td>
+    <td align="left"><%= password_field "password" , tabindex => '2' %></td>
+</tr>
+<% if( setting->is_openid ){ %>
+<tr>
+  <td align="right"><label for="openid_url"><%= l 'field_identity_url' %></label></td>
+  <td align="left"><%= text_field "openid_url" => '' , tabindex => '3' %></td>
+</tr>
+<% } %>
+<tr>
+    <td></td>
+    <td align="left">
+        <% if( setting->is_autologin ){ %>
+        <label for="autologin"><%= check_box 'autologin' => 1 , 0, tabindex => 4 %> <%= l 'label_stay_logged_in' %></label>
+        <% } %>
+    </td>
+</tr>
+<tr>
+    <td align="left">
+        <% if( setting->is_lost_password ){ %>
+            <%= link_to l('label_password_lost') => url_for( '/account/lost_password' ) %>
+        <% } %>
+    </td>
+    <td align="right">
+        <input type="submit" name="login" value="<%= l 'button_login' %> &#187;" tabindex="5"/>
+    </td>
+</tr>
+</table>
+%= javascript begin
+Form.Element.focus('username');
+% end
+<% end %>
+</div>
+<% emit_hook 'view_account_login_bottom'; %>

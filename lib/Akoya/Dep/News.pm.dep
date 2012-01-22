@@ -1,0 +1,53 @@
+package Akoya::News;
+use Mojo::Base 'Mojolicious::Plugin';
+use lib qw|/Users/tripper/akoya/lib|;
+use Akoya::News::Attribute;
+use Akoya::Project::Attribute;
+
+has [qw/parent/];
+
+sub register {
+  my ( $self , $app ) = @_;
+  my $news = __PACKAGE__->new;
+
+  $app->helper(
+    news => sub{
+      my ( $c ) = @_;
+      $news->parent( $c );
+      $news;
+    }
+  );
+
+  $app->helper(
+    news_path => sub{
+      my ( $c, $news ) = @_;
+      $c->url_for( "news/" . $news->id );
+    }
+  );
+
+}
+
+sub project {
+  my ( $self ) = @_;
+}
+
+sub latest {
+  my ( $self , $user, $count ) = @_;
+  $user ||= $self->parent->user->current;
+  $count ||= 5;
+
+  my $result = $self->parent->dbi->model('news')->select(
+    column => 'id',
+    append => "order by created_on desc limit $count"
+  );
+
+  my @news = ();
+
+  while ( my $row = $result->fetch_hash ) {
+    push @news , Akoya::News::Attribute->new( id => $row->{id} , parent => $self->parent );
+  }
+
+  @news;
+}
+
+1;

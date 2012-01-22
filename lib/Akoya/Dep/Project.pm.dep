@@ -1,0 +1,39 @@
+package Akoya::Project;
+use Mojo::Base 'Mojolicious::Plugin';
+use lib qw|/Users/tripper/akoya/lib|;
+use Akoya::Project::Attribute;
+
+has [qw/parent/];
+
+sub register {
+  my ( $self , $app ) = @_;
+  my $project = __PACKAGE__->new;
+  $app->helper(
+    project => sub{
+      my ( $c ) = @_;
+      $project->parent( $c );
+      $project;
+    }
+  );
+}
+
+sub latest {
+  my ( $self , $user , $count ) = @_;
+  my $result = $self->parent->dbi->execute("select id from projects");
+  my @projects = ();
+  while( my $project = $result->fetch_hash ){
+    push @projects , Akoya::Project::Attribute->new( id => $project->{id} , parent => $self->parent );
+  }
+  \@projects;
+}
+
+sub is_active {
+  my ( $self ) = @_;
+  0;
+}
+
+sub is_newrecord {
+  1;
+}
+
+1;
