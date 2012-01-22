@@ -232,6 +232,8 @@ sub register {
   $r->route( ':controller/:action/:id' );
   $r->route( ':controller/:action' );
 
+  $r->route( 'admin' )->to( controller => 'admin', action => 'index' );
+
   $r->route( 'welcome/robots' )->name( 'robots.txt' );
   # Used for OpenID
   $r->route( 'account/login' )->name( 'root' );

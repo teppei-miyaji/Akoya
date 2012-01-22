@@ -1,6 +1,5 @@
 package Controllers::Users;
 use Mojo::Base 'Mojolicious::Controller';
-use lib qw|/Users/tripper/akoya/lib|;
 
 has 'handler';
 
@@ -10,8 +9,8 @@ sub show {
   # show projects based on current user visibility
   my @memberships = $self->user->memberships->all( conditions => $self->project->visible_condition( $self->user->current ) );
 
-  my $events = Akoya::Activity::Fetcher->new( $self->user->current, author => $user )->events( undef , undef , { limit => 10} );
-  my @events_by_day = $events->group_by( 'event_date' );
+  my $events = Akoya::Activity::Fetcher->new( user => $self->user->current, author => $user )->events( undef , undef , { limit => 10} );
+  my @events_by_day = $self->a_group_by( 'event_date', $events );
 
   unless( $user->current->is_admin ){
     if( ! $user->is_active || ( $user != $self->user->current && @memberships && $events ) ){

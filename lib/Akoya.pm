@@ -3,6 +3,9 @@ use Mojo::Base 'Mojolicious';
 use Data::Dumper;
 use KaiBashira::TimeZone;
 
+use Akoya::Activity;
+use Akoya::Activity::Fetcher;
+
 our $CODENAME = 'Akoya Gai';
 our $VERSION  = '0.001';
 
@@ -31,7 +34,7 @@ sub startup {
 
   $self->plugin('Akoya::AccessControl');
   $self->plugin('Akoya::AccessKeys');
-  $self->plugin('Akoya::Activity');
+#  $self->plugin('Akoya::Activity');
   $self->plugin('Akoya::CustomFieldFormat');
   $self->plugin('Akoya::Helpers');
   $self->plugin('Akoya::Hook');
@@ -165,7 +168,7 @@ sub startup {
     $menu->push( 'home' , $self->url_for( 'home' ) );
     $menu->push( 'my_page' , { controller => 'my', action => 'page' } , { if => sub { shift->user->current->is_logged } } );
     $menu->push( 'projects' , { controller => 'projects', action => 'index' }, { caption => 'label_project_plural' } );
-    $menu->push( 'administration' , { controller => 'admin', action => 'index' }, { if => sub { shift->user->current->is_admin }, last => 1 } );
+    $menu->push( 'administration' , $self->url_for( '/admin' ) , { if => sub { shift->user->current->is_admin }, last => 1 } );
     $menu->push( 'help' , Akoya::Info->help_url , { last => 1 } );
   } );
 
@@ -221,15 +224,15 @@ sub startup {
     $menu->push( 'settings', { controller => 'projects', action => 'settings' }, { last => 1 } );
   } );
 
-  $self->activity->map( sub { my ( $activity ) = @_;
-    $activity->entry( 'issues', { class_name => [qw/Issue Journal/] } );
-    $activity->entry( 'changesets' );
-    $activity->entry( 'news' );
-    $activity->entry( 'documents', { class_name => [qw/Document Attachment/] } );
-    $activity->entry( 'files', { class_name => 'Attachment' } );
-    $activity->entry( 'wiki_edits', { class_name => 'WikiContent::Version', default => 0 } );
-    $activity->entry( 'messages', { default => 0 } );
-    $activity->entry( 'time_entries', { default => 0 } );
+  Akoya::Activity->map( sub { my ( $activity ) = @_;
+    Akoya::Activity->entry( 'issues', { class_name => [qw/Issue Journal/] } );
+    Akoya::Activity->entry( 'changesets' );
+    Akoya::Activity->entry( 'news' );
+    Akoya::Activity->entry( 'documents', { class_name => [qw/Document Attachment/] } );
+    Akoya::Activity->entry( 'files', { class_name => 'Attachment' } );
+    Akoya::Activity->entry( 'wiki_edits', { class_name => 'WikiContent::Version', default => 0 } );
+    Akoya::Activity->entry( 'messages', { default => 0 } );
+    Akoya::Activity->entry( 'time_entries', { default => 0 } );
   } );
 
   # Routes

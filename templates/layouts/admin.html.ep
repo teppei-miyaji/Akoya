@@ -1,4 +1,4 @@
-<% unless( $controller eq 'admin' && $action_name eq 'index' ){ %>
+<% unless( $controller eq 'admin' && $action eq 'index' ){ %>
   <% content_for sidebar => begin %>
     <h3><%= l('label_administration') %></h3>
     <%= include 'admin/menu' %>

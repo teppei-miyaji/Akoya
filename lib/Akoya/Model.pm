@@ -13,6 +13,7 @@ use Akoya::Data::Token;
 use Akoya::Data::Setting;
 use Akoya::Data::AuthSource;
 use Akoya::Data::Member;
+use Akoya::Data::Role;
 
 sub register {
   my ( $self , $app ) = @_;

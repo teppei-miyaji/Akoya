@@ -3,6 +3,8 @@ use lib qw|/Users/tripper/akoya/lib|;
 use KaiBashira::Base -base;
 use KaiBashira::Data -base;
 
+use Akoya::Data::Role;
+
 use Data::Dumper;
 
 has [qw/id name description homepage is_public parent_id created_on updated_on identifier status lft rgt/];
@@ -68,7 +70,7 @@ sub allowed_to_condition {
   }
   my $statement_by_role = {};
   unless( $options->{member} ){
-    my $role = $user->is_logged ? Akoya::Role->non_member : Akoya::Role->anonymous;
+    my $role = $user->is_logged ? Akoya::Data::Role->non_member : Akoya::Data::Role->anonymous;
     if( $role->is_allowed_to( $permission ) ){
       $statement_by_role->{ $role } = "#{Project.table_name}.is_public = #{connection.quoted_true}"
     }

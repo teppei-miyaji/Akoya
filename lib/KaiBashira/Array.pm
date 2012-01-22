@@ -62,6 +62,17 @@ sub register {
     }
   );
 
-}  
+  $app->helper(
+    a_group_by => sub {
+      my ( $c , $group , @array ) = @_;
+      my $result = {};
+      foreach my $item( @array ){
+
+      }
+      $result;
+    }
+  );
+
+}
 
 1;

@@ -1,21 +1,17 @@
 package Akoya::Activity;
-use Mojo::Base 'Mojolicious::Plugin';
+use KaiBashira::Base -base;
 use KaiBashira::Hash;
 use Mojo::ByteStream qw/b/;
 
-sub register {
-  my ( $self , $app ) = @_;
-  my $activity = __PACKAGE__->new;
-  $app->helper( activity => sub{ $activity; } );
+pub activity => sub { {} };
+
+sub map { shift if $_[0] eq __PACKAGE__; shift if ref( $_[0] ) eq __PACKAGE__;
+  my ( $sub ) = @_;
+  $sub->( __PACKAGE__->activity );
 }
 
-sub map {
-  my ( $self , $sub ) = @_;
-  $sub->( $self );
-}
-
-sub entry {
-  my ( $self , $event_type , $options ) = @_;
+sub entry { shift if $_[0] eq __PACKAGE__; shift if ref( $_[0] ) eq __PACKAGE__;
+  my ( $event_type , $options ) = @_;
   my $hash_check = KaiBashira::Hash->new;
   $hash_check->assert_valid_keys( $options , qw/class_name default/ );
 
@@ -32,10 +28,10 @@ sub entry {
     push @providers , b( $event_type )->camelize->to_string;
   }
 
-  $self->{available_event_types}->{ $event_type } = $event_type unless $self->{available_event_types}->{ $event_type };
+  __PACKAGE__->activity->{available_event_types}->{ $event_type } = $event_type unless __PACKAGE__->activity->{available_event_types}->{ $event_type };
   $options->{default} = 1 unless defined $options->{default};
-  $self->{default_event_types}->{ $event_type } = $event_type unless $options->{default} == 0;
-  push @{ $self->{providers}->{ $event_type } } , @providers;
+  __PACKAGE__->activity->{default_event_types}->{ $event_type } = $event_type unless $options->{default} == 0;
+  push @{ __PACKAGE__->activity->{providers}->{ $event_type } } , @providers;
 }
 
 1;

@@ -307,6 +307,8 @@ use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::ByteStream 'b';
 use Carp;
 
+has infrector => sub{ KaiBashira::Inflector->new };
+
 sub register {
   my ( $self , $app ) = @_;
 
@@ -332,7 +334,6 @@ sub register {
     foreach my $node ( $c->menu_items_for( $menu, $project ) ){
       push @links , $c->render_menu_node( $node, $project );
     }
-#    ! @links ? undef : b( b( $c->tag( ul => join( '' , map { $c->link_to( $_ ) . "\n" } @links ) ) )->html_unescape )->html_unescape;
     ! @links ? undef : b( b( $c->tag( ul => join( '' , @links ) ) )->html_unescape )->html_unescape;
   } );
 
@@ -387,7 +388,11 @@ sub register {
   $app->helper( render_single_menu_node => sub {
     my ( $c , $item , $caption , $url , $selected ) = @_;
     $item->{selected} = $selected if $selected;
-    $c->link_to( "$caption" => $url => ( $item->html_options ) );
+    my $html_class = $self->infrector->dasherize( $url );
+    $html_class =~ s|/$||;
+    $html_class =~ s|^.*/||;
+    $html_class = $item->html_options->{class} if defined( $item->html_options->{class} );
+    $c->link_to( "$caption" => $url => ( class => $html_class ) );
   } );
 
   $app->helper( render_unattached_menu_item => sub {
@@ -395,9 +400,13 @@ sub register {
     croak "MenuError child_menus must be an array of Akoya::MenuManager::MenuItems" unless ref( $menu_item ) eq "Akoya::MenuManager::MenuItem";
 
     if( $c->user->current->is_allowed_to( $menu_item->url , $project ) ){
-      $c->link_to( $menu_item->caption( $c , $project ) ,
-               $menu_item->url,
-               $menu_item->html_options );
+      my $html_class = $self->infrector->dasherize( $menu_item->url );
+      $html_class =~ s|/$||;
+      $html_class =~ s|^.*/||;
+      $html_class = $menu_item->html_options->{class} if defined( $menu_item->html_options->{class} );
+      $c->link_to( $menu_item->caption( $c , $project ) =>
+               $menu_item->url =>
+               ( class => $html_class ) );
     }
   } );
 
